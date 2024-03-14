@@ -6,12 +6,18 @@ import android.content.Context
  * 初始化器
  *
  * ~~~ Kotlin
+ * class App : Application() {
+ *     override fun onCreate() {
+ *         super.onCreate()
+ *         Initializer.init(this)
+ *     }
+ * }
+ *
  * @AutoService(Initializer::class)
  * class XxxInit : Initializer {
  *     override fun onInit(context: Context) {
  *         println(this)
  *     }
- *
  *     // 可选方法，依赖集合，优先初始化依赖项
  *     override fun dependencies(): Set<Class<out Initializer>> {
  *         return setOf(Xxx1Init::class.java, Xxx2Init::class.java)
@@ -54,7 +60,7 @@ interface Initializer {
             // 等待初始化的对象
             val waitList = ArrayList<Initializer>()
             // 依赖项缓存
-            val dependenciesCache = HashMap<Initializer, Set<Class<out Initializer>>>()
+            val dependenciesCache = HashMap<Initializer, MutableSet<Class<out Initializer>>>()
 
             // 初始化，并记录
             val initAndRecord = { it: Initializer ->
@@ -66,7 +72,7 @@ interface Initializer {
             val waitAndRecord = { it: Initializer, dependencies: Set<Class<out Initializer>> ->
                 waitList.add(it)
                 waitSet.add(it::class.java)
-                dependenciesCache[it] = dependencies
+                dependenciesCache[it] = dependencies.toMutableSet()
             }
 
             // 首轮初始化不需要依赖的初始化器
@@ -82,25 +88,25 @@ interface Initializer {
             while (waitList.isNotEmpty()) {
                 // 每一轮循环依赖标识，true为循环依赖
                 var isCircular = true
-
-                val iterator = waitList.iterator()
-                while (iterator.hasNext()) {
-                    val it = iterator.next()
-                    var count = 0
+                val waitIterator = waitList.iterator()
+                // 检查依赖项
+                while (waitIterator.hasNext()) {
+                    val it = waitIterator.next()
                     val dependencies = dependenciesCache[it]!!
-                    // 检查依赖项
-                    for (clazz in dependencies) {
+                    val dependenciesIterator = dependencies.iterator()
+                    while (dependenciesIterator.hasNext()) {
+                        val clazz = dependenciesIterator.next()
                         when {
-                            initSet.contains(clazz) -> count++
+                            initSet.contains(clazz) -> dependenciesIterator.remove()
                             !waitSet.contains(clazz) -> noDependency(it, clazz)
                         }
                     }
                     // 依赖完整，初始化并进入下一轮
-                    if (count == dependencies.size) {
+                    if (dependencies.isEmpty()) {
                         isCircular = false
                         initAndRecord(it)
                         // 清除等待记录
-                        iterator.remove()
+                        waitIterator.remove()
                         waitSet.remove(it::class.java)
                         break
                     }
