@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-kapt")
+    `maven-publish`
+    signing
 }
 
 android {
@@ -40,4 +42,52 @@ dependencies {
 
     implementation(libs.auto.service.annotations)
     kapt(libs.auto.service)
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "io.github.xiaobaicz"
+            artifactId = "initializer"
+            version = "0.0.1"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+
+            pom {
+                name = "initializer"
+                description = "android initializer"
+                url = "https://github.com/xiaobaicz/initializer"
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                    }
+                }
+                developers {
+                    developer {
+                        name = "bocheng.lao"
+                        email = "xiaojinjincz@outlook.com"
+                        organization = "bocheng.lao"
+                        organizationUrl = "https://xiaobaicz.github.io"
+                    }
+                }
+                scm {
+                    connection = "scm:git:https://github.com/xiaobaicz/initializer.git"
+                    developerConnection = "scm:git:https://github.com/xiaobaicz/initializer.git"
+                    url = "https://github.com/xiaobaicz/initializer"
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("../build/maven")
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["release"])
 }
