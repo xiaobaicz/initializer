@@ -1,4 +1,4 @@
-package io.github.xiaobaicz.initializer.exception
+package io.github.xiaobaicz.initializer
 
 class CircularDependencyException(
     aClass: Class<*>,

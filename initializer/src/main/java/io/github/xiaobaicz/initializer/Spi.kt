@@ -1,4 +1,4 @@
-package io.github.xiaobaicz.initializer.utils
+package io.github.xiaobaicz.initializer
 
 import java.util.ServiceLoader
 
