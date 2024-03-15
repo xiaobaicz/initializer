@@ -9,20 +9,13 @@ plugins {
     id("kotlin-kapt")
 }
 dependencies {
-    implementation("io.github.xiaobaicz:initializer:0.0.1")
+    implementation("io.github.xiaobaicz:initializer:0.0.2")
     implementation("com.google.auto.service:auto-service-annotations:1.1.1")
     kapt("com.google.auto.service:auto-service:1.1.1")
 }
 ~~~
 
 ~~~ kotlin
-class App : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        Initializer.init(this)
-    }
-}
-
 @AutoService(Initializer::class)
 class XxxInit : Initializer {
     override fun onInit(context: Context) {
