@@ -6,13 +6,6 @@ import android.content.Context
  * 初始化器
  *
  * ~~~ Kotlin
- * class App : Application() {
- *     override fun onCreate() {
- *         super.onCreate()
- *         Initializer.init(this)
- *     }
- * }
- *
  * @AutoService(Initializer::class)
  * class XxxInit : Initializer {
  *     override fun onInit(context: Context) {
