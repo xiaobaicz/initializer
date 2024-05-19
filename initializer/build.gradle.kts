@@ -40,7 +40,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.auto.service.annotations)
+    api(libs.auto.service.annotations)
     kapt(libs.auto.service)
 }
 
@@ -49,7 +49,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "io.github.xiaobaicz"
             artifactId = "initializer"
-            version = "0.0.2"
+            version = "0.0.3"
 
             afterEvaluate {
                 from(components["release"])
